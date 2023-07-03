@@ -690,3 +690,169 @@ class Rect: Shape {
         return sideLength * sideLength;
     }
 }
+
+// A simple class `Square` extends `Rect`
+class Square: Rect {
+    convenience init() {
+        self.init(sideLength: 5)
+    }
+}
+
+var mySquare = Square()
+
+print(mySquare.getArea()) // 25
+mySquare.shrink();
+print(mySquare.sideLength); // 4
+
+// cast instance
+let aShape:Shape = mySquare // you can also do let aShape = mySquare as Square
+
+// downcast instance:
+// Becasue downcasting can fail, the result can be an optional (as?) or an implicitly unwrapped optional (as!).
+let anOptionalSqure = aShape as? Square // This will return nil if aShape is not a Square
+
+let aSquare = aShape as! Square // This will throw a runtime error if aShape is not a Square
+
+// compare instances, not the same as == which compares objects (equal to)
+if mySquare === mySquare {
+    print("Yep, they are the same instance")
+}
+
+
+// Optional init
+class Circle: Shape {
+    var radius: Int
+    override func getArea() -> Int {
+        return 3 * radius * radius;
+    }
+    
+    // Place a question mark postfix after `init` is an optional init
+    // which can return nil
+    init?(radius: Int) {
+        self.radius = radius;
+        super.init();
+        
+        if radius <= 0 {
+            return nil;
+        }
+    }
+}
+
+var myCircle = Circle(radius: 1)
+print(myCircle?.getArea())
+print(myCircle!.getArea())
+
+var myEmptyCircle = Circle(radius: -1)
+print(myEmptyCircle?.getArea())
+if let circle = myEmptyCircle {
+    // will not execute since myEmptyCircle is nil
+    print("circle is not nil");
+}
+
+
+// MARK: - Protocols
+
+// protocols are also known as interfaces in some other languages
+
+// `protocol`s can require that conforming types have specific
+// instance properties, instance methods, type methods,
+// operators, and subscripts.
+
+protocol ShapeGenerator {
+    var enabled: Bool {get set}
+    func buildShape() -> Shape
+}
+
+// MARK: - Other
+
+// MARK: Typealiases
+
+// Typealiases allow one type (or composition of types) to be referred to by another name
+
+typealias Integer = Int
+let myInteger: Integer = 0; // wwydt? Int saves 4Bytes over Integer :>
+
+
+// MARK: = Operator
+
+// Assignment does not return a value. This means it can't be used in conditional statements,
+//   and the following statement is also illegal
+//    let multipleAssignment = theQuestion = "No questions asked"
+//But you can do this:
+let multipleAssignment = "No questions asked", secondConstant = "No answers given"
+
+// MARK: Ranges
+
+// The ..< and ... operators create ranges.
+
+// ... is inclusive on both ends (a "closed range") — mathematically, [0, 10]
+let _0to10 = 0...10
+// ..< is inclusive on the left, exclusive on the right (a "range") — mathematically, [0, 10)
+let singleDigitNumbers = 0..<10
+// You can omit one end (a "PartialRangeFrom") — mathematically, [0, ∞)
+let toInfinityAndBeyond = 0...
+// Or the other end (a "PartialRangeTo") — mathematically, (-∞, 0)
+let negativeInfinityToZero = ..<0
+// (a "PartialRangeThrough") — mathematically, (-∞, 0]
+let negativeInfinityThroughZero = ...0
+
+
+// MARK: Wildcard operator
+
+// In Swift, _ (underscore) is the wildcard operator, which allows values to be ignored
+
+// It allows functions to be declared without argument labels:
+func function(_ labelLessParameter: Int, label labeledParameter: Int, labelAndParameterName: Int) {
+    print(labelLessParameter, labeledParameter, labelAndParameterName)
+}
+function(0, label: 0, labelAndParameterName: 0)
+
+
+// You can ignore the return values of functions
+func printAndReturn(_ str: String) -> String {
+    print(str)
+    return str
+}
+let _ = printAndReturn("Some String")
+
+// You can ignore part of a tuple and keep part of it
+func returnsTuple() -> (Int, Int) {
+    return (1, 2)
+}
+let (_, two) = returnsTuple()
+
+let addNumbers: (Int, Int) -> Int = { (a: Int, b: Int) -> Int in
+    return a + b
+}
+
+// that can turn into concise form
+let addNumbersClosure: (Int, Int) -> Int = { a, b in
+    return a + b;
+}
+
+let closure: (Int, Int) -> String = {someInt, _ in
+    return "\(someInt)";
+}
+
+closure(1, 2);
+
+let result = addNumbers(5, 3)
+print(result)  // Output: 8
+
+
+for _ in 0..<10 {
+   // Code to execute 10 times useful when ydc'bout the index
+}
+
+// MARK: Access Control
+
+/*
+ Swift has five levels of access control:
+ - Open: Accessible *and subclassible* in any module that imports it.
+ - Public: Accessible in any module that imports it, subclassible in the module it is declared in.
+ - Internal: Accessible and subclassible in the module it is declared in.
+ - Fileprivate: Accessible and subclassible in the file it is declared in.
+ - Private: Accessible and subclassible in the enclosing declaration (think inner classes/structs/enums)
+
+ See more here: https://docs.swift.org/swift-book/LanguageGuide/AccessControl.html
+ */
