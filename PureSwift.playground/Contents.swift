@@ -856,3 +856,186 @@ for _ in 0..<10 {
 
  See more here: https://docs.swift.org/swift-book/LanguageGuide/AccessControl.html
  */
+
+// You can add keyword `final` before a class or instance method, or a property to prevent it from being overridden
+
+class RShape {
+    final var finalInteger = 10
+}
+
+// Prevent a class from being subclassed
+final class ViewManager {
+}
+
+
+// MARK: Conditional Compilation, Compile-Time Diagnostics, & Availability Conditions
+
+// Conditional Compilation
+#if false
+print("This code will not be compiled")
+#else
+print("This code will be compiled")
+#endif
+/*
+ Options are:
+ os()                   macOS, iOS, watchOS, tvOS, Linux
+ arch()                 i386, x86_64, arm, arm64
+ swift()                >= or < followed by a version number
+ compiler()             >= or < followed by a version number
+ canImport()            A module name
+ targetEnvironment()    simulator
+ */
+#if swift(<3)
+println("Update your Swift, Mate 🦆")
+#endif
+
+
+// Compile-Time Diagnostics
+// You can use #warning(message) and #error(message) to have the compiler emit warnings and/or errors
+#warning("This will be a compile-time warning")
+//  #error("This would be a compile-time error")
+
+//Availability Conditions
+if #available(macCatalyst 10.15, *) {
+    // macOS 10.15 is available, you can use it here
+    print("API available!")
+} else {
+    // macOS 10.15 is not available, use alternate APIs
+}
+
+// MARK: Any and AnyObject
+
+// Swift has support for storing a value of any type.
+// For that purpose there are two keywords: `Any` and `AnyObject`
+// `AnyObject` == `id` from Objective-C
+// `Any` works with any values (class, Int, struct, etc.)
+var anyVar: Any = 7
+anyVar = "Changed value to a string, not good practice, but possible."
+let anyObjectVar: AnyObject = Int(1) as NSNumber
+
+// MARK: Extensions
+
+// Extensions allow you to add extra functionality to an already-declared type, even one that you don't have the source code for.
+
+// Square now "conforms" to the `CustomStringConvertible` protocol
+extension Square: CustomStringConvertible {
+    var description: String {
+        return "Area: \(self.getArea()) - ID: \(self.identifier)"
+    }
+}
+
+print("Square: \(mySquare)")
+
+// You can also extend built-in types
+extension Int {
+    var doubled: Int {
+        return self * 2
+    }
+
+    func multipliedBy(num: Int) -> Int {
+        return num * self
+    }
+
+    mutating func multiplyBy(num: Int) {
+        self *= num
+    }
+}
+
+print(7.doubled) // 14
+print(7.doubled.multipliedBy(num: 3)) // 42
+
+// MARK: Generics
+
+// Generics: Similar to Java and C#. Use the `where` keyword to specify the
+//   requirements of the generics.
+
+func findIndex<T: Equatable>(array: [T], valueToFind: T) -> Int? {
+    for (index, value) in array.enumerated() {
+        if value == valueToFind {
+            return index
+        }
+    }
+    return nil
+}
+findIndex(array: [1, 2, 3, 4], valueToFind: 3) // Optional(2)
+
+// You can extend types with generics as well
+extension Array where Array.Element == Int {
+    var sum: Int {
+        var total = 0
+        for el in self {
+            total += el
+        }
+        return total
+    }
+}
+
+// MARK: Operators
+
+// Custom operators can start with the characters:
+//      / = - + * % < > ! & | ^ . ~
+// or
+// Unicode math, symbol, arrow, dingbat, and line/box drawing characters.
+prefix operator !!!
+
+// A prefix operator that triples the side length when used
+prefix func !!! (shape: inout Square) -> Square {
+    shape.sideLength *= 3
+    return shape
+}
+
+// current value
+print(mySquare.sideLength) // 4
+
+// change side length using custom !!! operator, increases size by 3
+!!!mySquare
+print(mySquare.sideLength) // 12
+
+// Operators can also be generics
+infix operator <->
+func <-><T: Equatable> (a: inout T, b: inout T) {
+    let c = a
+    a = b
+    b = c
+}
+
+var foo: Float = 10
+var bar: Float = 20
+
+foo <-> bar
+print("foo is \(foo), bar is \(bar)") // "foo is 20.0, bar is 10.0"
+
+// MARK: - Error Handling
+
+// The `Error` protocol is used when throwing errors to catch
+enum MyError: Error {
+    case badValue(msg: String)
+    case reallyBadValue(msg: String)
+}
+
+// functions marked with `throws` must be called using `try`
+func fakeFetch(value: Int) throws -> String {
+    guard 7 == value else {
+        throw MyError.reallyBadValue(msg: "Some really bad value")
+    }
+
+    return "test"
+}
+func testTryStuff() {
+    // assumes there will be no error thrown, otherwise a runtime exception is raised
+    let _ = try! fakeFetch(value: 7)
+
+    // if an error is thrown, then it proceeds, but if the value is nil
+    // it also wraps every return value in an optional, even if its already optional
+    let _ = try? fakeFetch(value: 7)
+
+    do {
+        // normal try operation that provides error handling via `catch` block
+        try fakeFetch(value: 1)
+    } catch MyError.badValue(let msg) {
+        print("Error message: \(msg)")
+    } catch {
+        // must be exhaustive
+    }
+}
+testTryStuff()
