@@ -598,3 +598,95 @@ print(chair.description());
 
 // MARK: - Structures & classes
 
+/*
+ Structures and classes in Swift have many things in common. Both can:
+ - Define properties to store values
+ - Define methods to provide functionality
+ - Define subscripts to provide access to their values using subscript syntax
+ - Define initializers to set up their initial state
+ - Be extended to expand their functionality beyond a default implementation
+ - Conform to protocols to provide standard functionality of a certain kind
+
+ Classes have additional capabilities that structures don't have:
+ - Inheritance enables one class to inherit the characteristics of another.
+ - Type casting enables you to check and interpret the type of a class instance at runtime.
+ - Deinitializers enable an instance of a class to free up any resources it has assigned.
+ - Reference counting allows more than one reference to a class instance.
+
+ Unless you need to use a class for one of these reasons, use a struct.
+
+ Structures are value types, while classes are reference types.
+ */
+
+// MARK: Structures
+
+struct NamesTable {
+    let names: [String]
+
+    // Custom subscript
+    subscript(index: Int) -> String {
+        return names[index]
+    }
+}
+
+// Structures have an auto-generated (implicit) designated "memberwise" initializer
+let namesTable = NamesTable(names: ["Me", "Them"])
+let name = namesTable[1]
+print("Name is \(name)") // Name is Them
+
+// MARK: Classes
+
+class Shape {
+    func getArea() -> Int {
+        return 0;
+    }
+}
+
+class Rect: Shape {
+    var sideLength: Int = 1
+    
+    // Custom getter and setter property
+    var perimeter: Int {
+        get {
+            return 4 * sideLength;
+        }
+        set {
+            sideLength = newValue / 4
+        }
+    }
+    
+    // Computed properties must be declared as `var`, you know, cause' they can change
+    var smallestSideLength: Int {
+        return self.sideLength - 1;
+    }
+    
+    // Lazily load a property
+    // subShape remains nil (uninitialized) until getter's called
+    lazy var subShape = Rect(sideLength: 4)
+    
+    // If you don't need a custom getter and setter,
+    // but still want to run code before and after getting or setting
+    // a property, you can use `willSet` and `didSet`
+    var identifier: String = "defaultID" {
+        // the `someIdentifier` arg will be the variable name for the new value
+        willSet(someIdentifier) {
+            print(someIdentifier)
+        }
+    }
+    
+    init(sideLength: Int) {
+        self.sideLength = sideLength;
+        // always super.init last when init custom properties
+        super.init();
+    }
+    
+    func shrink() {
+        if sideLength > 0 {
+            sideLength -= 1;
+        }
+    }
+    
+    override func getArea() -> Int {
+        return sideLength * sideLength;
+    }
+}
