@@ -152,7 +152,7 @@ var someOptionalString4 = String?.none;
 
 
 if someOptionalString != nil {
-    if someOptionalString!.hasPrefix("opt") {
+    if someOptionalString!.hasPrefix("Opt") {
         print("has the prefix");
     }
 }
@@ -210,7 +210,7 @@ let unwrappedString: String! = "Value is expected";
 
 // Here's the difference
 let forcedString : String = someOptionalString!; // requires an `!` mark
-let implicitString = unwrappedString; // doesn't require that `!` mark
+let implicitString : String = unwrappedString; // doesn't require that `!` mark
 
 
 /*
@@ -415,6 +415,10 @@ func performFunction(_ function: (String, String) -> String, on string1: String,
     print("The result of calling the function on \(string1) and \(string2) was \"\(result)\"");
 }
 
+func customAdd(a: String, b: String) -> String {
+    return "\(a), \(b)";
+}
+
 performFunction(customAdd, on: "a", and: "b")
 
 // Function that returns multiple items in a tuple
@@ -428,10 +432,6 @@ let price = pricesTuple.2
 let (_, price1, _) = pricesTuple // price1 = 3.69
 print(price1 == pricesTuple.1) // true
 print("Gas Price: \(price)")
-
-func customAdd(a: String, b: String) -> String {
-    return "\(a), \(b)";
-}
 
 // Labeled/named tuple params
 func getGasPrices2() -> (lowestPrice: Double, highestPrice: Double, midPrice: Double) {
@@ -492,7 +492,7 @@ numbers = numbers.sorted { $0 > $1 }
 
 print(numbers);
 
-// MARK: Enums
+// MARK: - Enums
 
 // Enums can optionally be of a specific type or on their own.
 // They can contain methods like classes.
@@ -568,7 +568,7 @@ enum BookName: String {
     case luke = "Luke"
 }
 
-print("Name: \(BookName.luke.rawValue)")
+print("Name: \(BookName.john.rawValue)")
 
 // Enum with associated Values
 enum Furniture {
@@ -618,7 +618,7 @@ print(chair.description());
  Structures are value types, while classes are reference types.
  */
 
-// MARK: Structures
+// MARK: -Structures
 
 struct NamesTable {
     let names: [String]
@@ -634,7 +634,7 @@ let namesTable = NamesTable(names: ["Me", "Them"])
 let name = namesTable[1]
 print("Name is \(name)") // Name is Them
 
-// MARK: Classes
+// MARK: -Classes
 
 class Shape {
     func getArea() -> Int {
@@ -729,12 +729,12 @@ class Circle: Shape {
     // Place a question mark postfix after `init` is an optional init
     // which can return nil
     init?(radius: Int) {
-        self.radius = radius;
-        super.init();
-        
         if radius <= 0 {
             return nil;
         }
+        
+        self.radius = radius;
+        super.init();
     }
 }
 
@@ -747,6 +747,8 @@ print(myEmptyCircle?.getArea())
 if let circle = myEmptyCircle {
     // will not execute since myEmptyCircle is nil
     print("circle is not nil");
+} else {
+    print("Circle is nil")
 }
 
 
@@ -765,7 +767,7 @@ protocol ShapeGenerator {
 
 // MARK: - Other
 
-// MARK: Typealiases
+// MARK: -Typealiases
 
 // Typealiases allow one type (or composition of types) to be referred to by another name
 
@@ -773,7 +775,7 @@ typealias Integer = Int
 let myInteger: Integer = 0; // wwydt? Int saves 4Bytes over Integer :>
 
 
-// MARK: = Operator
+// MARK: -= Operator
 
 // Assignment does not return a value. This means it can't be used in conditional statements,
 //   and the following statement is also illegal
@@ -781,7 +783,7 @@ let myInteger: Integer = 0; // wwydt? Int saves 4Bytes over Integer :>
 //But you can do this:
 let multipleAssignment = "No questions asked", secondConstant = "No answers given"
 
-// MARK: Ranges
+// MARK: -Ranges
 
 // The ..< and ... operators create ranges.
 
@@ -797,7 +799,7 @@ let negativeInfinityToZero = ..<0
 let negativeInfinityThroughZero = ...0
 
 
-// MARK: Wildcard operator
+// MARK: -Wildcard operator
 
 // In Swift, _ (underscore) is the wildcard operator, which allows values to be ignored
 
@@ -844,7 +846,7 @@ for _ in 0..<10 {
    // Code to execute 10 times useful when ydc'bout the index
 }
 
-// MARK: Access Control
+// MARK: -Access Control
 
 /*
  Swift has five levels of access control:
@@ -868,7 +870,7 @@ final class ViewManager {
 }
 
 
-// MARK: Conditional Compilation, Compile-Time Diagnostics, & Availability Conditions
+// MARK: -Conditional Compilation, Compile-Time Diagnostics, & Availability Conditions
 
 // Conditional Compilation
 #if false
@@ -903,7 +905,7 @@ if #available(macCatalyst 10.15, *) {
     // macOS 10.15 is not available, use alternate APIs
 }
 
-// MARK: Any and AnyObject
+// MARK: -Any and AnyObject
 
 // Swift has support for storing a value of any type.
 // For that purpose there are two keywords: `Any` and `AnyObject`
@@ -913,7 +915,7 @@ var anyVar: Any = 7
 anyVar = "Changed value to a string, not good practice, but possible."
 let anyObjectVar: AnyObject = Int(1) as NSNumber
 
-// MARK: Extensions
+// MARK: -Extensions
 
 // Extensions allow you to add extra functionality to an already-declared type, even one that you don't have the source code for.
 
@@ -944,7 +946,7 @@ extension Int {
 print(7.doubled) // 14
 print(7.doubled.multipliedBy(num: 3)) // 42
 
-// MARK: Generics
+// MARK: -Generics
 
 // Generics: Similar to Java and C#. Use the `where` keyword to specify the
 //   requirements of the generics.
@@ -993,7 +995,7 @@ print(mySquare.sideLength) // 12
 
 // Operators can also be generics
 infix operator <->
-func <-><T: Equatable> (a: inout T, b: inout T) {
+func <-><T> (a: inout T, b: inout T) {
     let c = a
     a = b
     b = c
